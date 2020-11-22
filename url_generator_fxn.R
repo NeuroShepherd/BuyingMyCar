@@ -5,13 +5,15 @@ truecar_url_creator <- function(make,model=NA,location,min_year,max_year="max",s
   
   model <- ifelse(is.na(model),"/",paste0("/",model,"/"))
   
-  npages <- glue::glue('https://www.truecar.com/used-cars-for-sale/listings/{make}{model}year-{min_year}-{max_year}/location-{location}/?page=1&searchRadius={searchRadius}') %>%
+  pagination <- glue::glue('https://www.truecar.com/used-cars-for-sale/listings/{make}{model}year-{min_year}-{max_year}/location-{location}/?page=1&searchRadius={searchRadius}') %>%
     read_html() %>%
     html_node(css = ".d-flex.justify-content-center") %>%
     html_text() %>%
-    stringr::str_extract(.,"(\\d+)$") %>%
-    seq_len()
-
+    stringr::str_extract(.,"(\\d+)$") 
+  
+  # Some make/model combos only have 1 page so the pagination number is just listed as chr ""
+  # Create ifelse statement to set "" to 1
+  npages<- ifelse(is.na(pagination), 1, pagination) %>% seq_len()
 
    glue::glue('https://www.truecar.com/used-cars-for-sale/listings/{make}{model}year-{min_year}-max/location-{location}/?page={npages}&searchRadius={searchRadius}') %>%
     return()
