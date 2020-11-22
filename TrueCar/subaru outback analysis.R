@@ -4,13 +4,14 @@ subarus_filtered <- subaru_outbacks %>%
   mutate(trim = factor(trim)) %>%
   mutate(age = 2021 - year)
 
-prediction <- subarus_filtered %>%
-  lm(price_usd ~ age + miles + trim, data = .) %>%
+model <- subarus_filtered %>%
+  lm(price_usd ~ age + miles + trim, data = .)
+
+prediction <- model %>%
   predict() %>%
   tibble(prediction = .)
 
-residuals <- subarus_filtered %>%
-  lm(price_usd ~ age + miles + trim, data = .) %>%
+residuals <- model %>%
   residuals() %>%
   tibble(residuals = .)
 

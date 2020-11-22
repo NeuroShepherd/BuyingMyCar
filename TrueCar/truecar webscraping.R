@@ -2,7 +2,7 @@
 
 
 
-links <- truecar_url_creator("volvo",
+links <- truecar_url_creator("subaru","outback",
                              location = "san-francisco-ca",
                              min_year=2017)
 
