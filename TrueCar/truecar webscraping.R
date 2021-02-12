@@ -4,10 +4,14 @@
 
 links <- truecar_url_creator("subaru","outback",
                              location = "san-francisco-ca",
-                             min_year=2017)
+                             min_year=2017, online_dealers = F)
 
 front_pages <- links %>% map(read_html)
   
+# scrape_truecar_data("jeep","grand-cherokee",
+#                     location = "san-francisco-ca",
+#                     min_year=2019) %>%
+#   View()
 
 
 
@@ -22,21 +26,13 @@ price <- front_pages %>%
   select(-junk) %>%
   mutate(price_usd = str_remove_all(price_usd,"\\$|,") %>% as.numeric())
 
-model <- front_pages %>%
-  map(~html_nodes(.x,'.vehicle-card-header.w-100') %>%
-        html_text()) %>%
-  map_dfr(~ .x %>% as_tibble(), .id = "name") %>%
-  rename(year = value) %>%
-  mutate(oink = str_extract(year, "\\d{4}"),
-         moo = str_extract(year, "\\!\\d{4}"))
-
 model_year <- front_pages %>%
   map(~html_nodes(.x,'.vehicle-card-header.w-100') %>%
         html_text()) %>%
   map_dfr(~ .x %>% as_tibble(), .id = "name") %>%
   rename(year = value) %>%
-  mutate(year = str_extract(year, "\\d{4}"),
-         year = as.numeric(year))
+  mutate(model = str_replace(year, "\\d{4}|Sponsored\\d{4}|","") %>% str_trim("left"),
+         year = str_extract(year, "\\d{4}") %>% as.numeric())
 
 miles_travelled <- front_pages %>%
   map(~html_nodes(.x,'.d-flex.w-100.justify-content-between') %>%
@@ -58,10 +54,12 @@ colors <- front_pages %>%
          interior = str_remove_all(interior, " interior"))
 
 trim <- front_pages %>%
-  map(~html_nodes(.x,'.font-size-1.text-truncate') %>%
+  map(~html_nodes(.x,'.vehicle-card-top') %>%
+        html_children() %>%
+        html_children() %>%
         html_text()) %>%
-  map_dfr(~ .x %>% as_tibble(), .id = "name") %>%
-  dplyr::filter(!str_detect(value,"exterior|list price|miles|Discount|No price rating|Contact dealer")) %>%
+  map_dfr(~ .x %>% as_tibble(), .id = "name") %>% 
+  dplyr::filter(row_number() %in% seq(2,nrow(.),2)) %>%
   rename(trim = value)
       
 VIN <- front_pages %>%
@@ -76,9 +74,11 @@ dealer_id <- front_pages %>%
   map_dfr(~ .x %>% as_tibble(), .id = "name") %>%
   rename(dealer_id = value)
 
-subaru_outbacks <- tibble(trim,price, model_year, miles_travelled, colors,VIN,dealer_id,
+subaru_outbacks <- tibble(model_year,trim,price, miles_travelled, colors,VIN,dealer_id,
        .name_repair = "unique") %>%
-  select(-contains("name")) 
+  select(-contains("name")) %>%
+  distinct(vin, .keep_all = T) %>%
+  mutate(link = glue::glue("https://www.truecar.com/used-cars-for-sale/listing/{vin}/")) 
 
 
 

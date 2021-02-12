@@ -1,8 +1,10 @@
 
 subarus_filtered <- subaru_outbacks %>% 
-  dplyr::filter(trim %in% c("2.5i Limited","2.5i Premium")) %>%
+#  dplyr::filter(trim %in% c("2.5i Limited","2.5i Premium")) %>%
   mutate(trim = factor(trim)) %>%
-  mutate(age = 2021 - year)
+  mutate(age = 2021 - year) %>%
+  dplyr::filter( !is.na(price_usd)) %>%
+  dplyr::filter( !is.na(miles))
 
 model <- subarus_filtered %>%
   lm(price_usd ~ age + miles + trim, data = .)
@@ -29,3 +31,5 @@ subarus_filtered %>%
   ggplot(aes(residuals,fill=trim)) +
   geom_histogram(alpha=.6, bins=20, color="black", position = "identity") +
   theme_minimal()
+
+subarus_filtered %>% arrange(residuals) %>% View()
