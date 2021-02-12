@@ -3,7 +3,7 @@
 
 truecar_url_creator <- function(make,model=NA,location,min_year,max_year="max",
                                 searchRadius=75,online_dealers=FALSE){
-  
+  library(rvest)
   model <- ifelse(is.na(model),"/",paste0("/",model,"/"))
   
   # Ifelse for filtering out online dealers when creating slugs
