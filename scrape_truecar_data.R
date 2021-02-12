@@ -70,23 +70,7 @@ scrape_truecar_data <- function(make,model=NA,location,min_year,max_year="max",s
     rename(trim = value)
   # ----- 
   
-# VIN scrape
-  # ----- 
-  VIN <- front_pages %>%
-    map(~html_nodes(.x, ".card.card-1.card-shadow.card-shadow-hover.vehicle-card._1qd1muk") %>%
-          html_attr("data-test-item")) %>%
-    map_dfr(~ .x %>% as_tibble(), .id = "name") %>%
-    rename(vin = value)
-  # ----- 
 
-# Dealer ID# scrape
-  # ----- 
-  dealer_id <- front_pages %>%
-    map(~html_nodes(.x, ".card.card-1.card-shadow.card-shadow-hover.vehicle-card._1qd1muk") %>%
-          html_attr("data-test-dealerid")) %>%
-    map_dfr(~ .x %>% as_tibble(), .id = "name") %>%
-    rename(dealer_id = value)
-  # ----- 
   
 # Create table and create unique TrueCar links to go to webpages
   tibble(model_year,trim,price, miles_travelled, colors,VIN,dealer_id,
