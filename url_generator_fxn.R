@@ -10,13 +10,13 @@ truecar_url_creator <- function(make,model=NA,location,min_year,max_year="max",
   pagination <- if (online_dealers) {
     glue::glue('https://www.truecar.com/used-cars-for-sale/listings/{make}{model}year-{min_year}-{max_year}/location-{location}/?page=1&searchRadius={searchRadius}') %>%
       read_html() %>%
-      html_node(css = ".d-flex.justify-content-center") %>%
+      html_node(css = ".pagination") %>%
       html_text() %>%
       stringr::str_extract(.,"(\\d+)$") 
   } else {
     glue::glue('https://www.truecar.com/used-cars-for-sale/listings/{make}{model}year-{min_year}-{max_year}/location-{location}/?onlineDealers=none&page=1&searchRadius={searchRadius}') %>%
       read_html() %>%
-      html_node(css = ".d-flex.justify-content-center") %>%
+      html_node(css = ".pagination") %>%
       html_text() %>%
       stringr::str_extract(.,"(\\d+)$")
   }

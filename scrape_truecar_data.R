@@ -73,14 +73,14 @@ scrape_truecar_data <- function(make,model=NA,location,min_year,max_year="max",s
   
 # VIN Scrape
   VIN <- front_pages %>%
-    map(~html_nodes(.x, ".linkable.card.card-shadow.card-shadow-hover.vehicle-card._1qd1muk") %>%
+    map(~html_nodes(.x, ".linkable.card.card-shadow.vehicle-card._1qd1muk") %>%
           html_attr('data-test-item')) %>%
     map_dfr(~ .x %>% as_tibble(), .id = "name") %>%
     rename(vin = value)
   
 # Dealer ID scrape
   dealer_id <- front_pages %>%
-    map(~html_nodes(.x, ".linkable.card.card-shadow.card-shadow-hover.vehicle-card._1qd1muk") %>%
+    map(~html_nodes(.x, ".linkable.card.card-shadow.vehicle-card._1qd1muk") %>%
           html_attr('data-test-dealerid')) %>%
     map_dfr(~ .x %>% as_tibble(), .id = "name") %>%
     rename(dealer_id = value)
@@ -93,5 +93,12 @@ scrape_truecar_data <- function(make,model=NA,location,min_year,max_year="max",s
     mutate(link = glue::glue("https://www.truecar.com/used-cars-for-sale/listing/{vin}/")) %>%
     return()
   
+  # return(list(model_year,trim,price, miles_travelled, colors,VIN,dealer_id))
   
 }
+
+
+# scrape_truecar_data(make = "honda",
+#                     model = "cr-v",
+#                     location = "san-francisco-ca",
+#                     min_year = 2016)
