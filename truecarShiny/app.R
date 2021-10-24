@@ -20,10 +20,10 @@ ui <- fluidPage(
         sidebarPanel(
             selectInput("brand",
                         "Brand",
-                        choices = c("Subaru","Toyota")),
+                        choices = c("","Subaru","Toyota")),
             selectInput("model",
                         "Model",
-                        choices = c("Observer fxn dependent on brand")),
+                        choices = c("","Outback")),
             sliderInput("model_year",
                         "Model Year Range:",
                         min = 2000,
@@ -31,8 +31,8 @@ ui <- fluidPage(
                         value = c(lubridate::year(Sys.Date())-1,lubridate::year(Sys.Date())),
                         sep = "",
                         dragRange = T),
-            sliderInput("gas_mileage",
-                        "Gas Mileage",
+            sliderInput("car_mileage",
+                        "Car Mileage",
                         min = 0,
                         max = 150000,
                         value = c(0,150000),
@@ -42,12 +42,19 @@ ui <- fluidPage(
                         min = 0,
                         max = 60000,
                         value = c(0,60000),
-                        pre = "$")
+                        pre = "$"),
+            textInput("location",
+                      "Location"),
+            sliderInput("distance",
+                        "Car Distance",
+                        min = 0,
+                        max = 500,
+                        value = 75)
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
-           plotOutput("distPlot")
+           tableOutput("table")
         )
     )
 )
@@ -55,6 +62,22 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
+    create_data <- reactive({
+        
+        scrape_truecar_data(make = input$brand,
+                            model = input$model,
+                            location = input$location,
+                            min_year = input$model_year[[1]],
+                            max_year = input$model_year[[2]],
+                            searchRadius = input$distance)
+        
+    })
+    
+    output$table <- renderTable({
+        
+        create_data()
+        
+    })
 
 }
 
