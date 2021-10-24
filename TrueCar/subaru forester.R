@@ -1,4 +1,7 @@
 
+# Subaru Forester generations
+# 4th: 2014-2018
+# 5th: 2019-present
 
 subaru_foresters <- scrape_truecar_data(make = "subaru",
                         model = "forester",

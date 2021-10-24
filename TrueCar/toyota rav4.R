@@ -6,7 +6,7 @@
 toyota_rav4 <- scrape_truecar_data(make = "toyota",
                                         model = "rav4",
                                         location = "san-francisco-ca",
-                                        min_year = 2017) %>%
+                                        min_year = 2014) %>%
   mutate(age = lubridate::year(Sys.Date()) - year) %>%
   dplyr::filter(!is.na(price_usd))
 

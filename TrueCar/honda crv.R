@@ -20,6 +20,6 @@ summary(honda_crv_lm)
 honda_crv %<>%
   mutate(residual = residuals(honda_crv_lm) %>% round(0))
 
-honda_crv %>%
+honda_crv %<>%
   dplyr::filter(str_detect(trim, "AWD")) %>%
   write_csv(path = "./honda_crv.csv", na="")
